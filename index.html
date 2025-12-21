@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="bg" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartBlock V3 - System Optimization & Security</title>
+    
+    <!-- Scripts & Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Config -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'sb-bg': '#050505',
+              'sb-accent': '#ff2a2a',
+              'sb-accent-dim': '#991b1b',
+              'discord': '#5865F2',
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            animation: {
+              'fade-up': 'fadeUp 0.8s ease-out forwards',
+              'aurora-1': 'aurora1 12s infinite alternate',
+              'aurora-2': 'aurora2 18s infinite alternate',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              fadeUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              aurora1: {
+                '0%': { transform: 'translate(0, 0) scale(1)' },
+                '100%': { transform: 'translate(20%, -20%) scale(1.1)' },
+              },
+              aurora2: {
+                '0%': { transform: 'translate(0, 0) scale(1)' },
+                '100%': { transform: 'translate(-20%, 10%) scale(1.2)' },
+              },
+            }
+          },
+        },
+      }
+    </script>
+
+    <style>
+      /* --- Base Styles --- */
+      body {
+        background-color: #050505;
+        color: #ffffff;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Noise Texture --- */
+      .bg-noise {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0.05;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      /* --- Aurora Gradients --- */
+      .aurora-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.4;
+        z-index: 0;
+        will-change: transform;
+      }
+
+      /* --- Glassmorphism --- */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      .glass-card:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .glass-nav {
+        background: rgba(5, 5, 5, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* --- Typography & Gradients --- */
+      .text-gradient {
+        background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      
+      .text-gradient-red {
+        background: linear-gradient(135deg, #ff2a2a 0%, #ef4444 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(255, 42, 42, 0.3);
+      }
+
+      /* --- UI Components --- */
+      .btn-primary {
+        background: linear-gradient(180deg, rgba(255, 42, 42, 0.1) 0%, rgba(153, 27, 27, 0.1) 100%);
+        border: 1px solid rgba(255, 42, 42, 0.4);
+        box-shadow: 0 0 20px rgba(255, 42, 42, 0.1), inset 0 0 10px rgba(255, 42, 42, 0.05);
+        transition: all 0.3s ease;
+      }
+      
+      .btn-primary:hover {
+        box-shadow: 0 0 30px rgba(255, 42, 42, 0.25), inset 0 0 20px rgba(255, 42, 42, 0.1);
+        border-color: rgba(255, 42, 42, 0.8);
+        text-shadow: 0 0 10px rgba(255, 42, 42, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .btn-discord {
+        background: rgba(88, 101, 242, 0.08);
+        border: 1px solid rgba(88, 101, 242, 0.2);
+        box-shadow: 0 0 15px rgba(88, 101, 242, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .btn-discord:hover {
+        background: rgba(88, 101, 242, 0.15);
+        border-color: rgba(88, 101, 242, 0.5);
+        box-shadow: 0 0 25px rgba(88, 101, 242, 0.15);
+        text-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
+        color: #fff;
+      }
+
+      /* --- Modal Animation --- */
+      .modal-bg {
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        transition: opacity 0.3s ease;
+      }
+      
+      .modal-content {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: scale(0.95) translateY(10px);
+        opacity: 0;
+      }
+
+      .modal-active .modal-bg {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal-active .modal-content {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+
+      .modal-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #050505; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="overflow-x-hidden selection:bg-sb-accent selection:text-white font-sans">
+    
+    <!-- Background Elements -->
+    <div class="bg-noise"></div>
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+      <div class="aurora-blob w-[800px] h-[800px] bg-red-900/20 top-[-20%] left-[-10%] animate-aurora-1"></div>
+      <div class="aurora-blob w-[600px] h-[600px] bg-purple-900/20 bottom-[-10%] right-[-5%] animate-aurora-2"></div>
+      <div class="aurora-blob w-[400px] h-[400px] bg-sb-accent/5 top-[40%] left-[50%] -translate-x-1/2 blur-[100px]"></div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+      
+      <!-- Navbar -->
+      <nav class="fixed top-0 w-full z-50 glass-nav">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center gap-3 select-none">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sb-accent to-red-900 flex items-center justify-center text-white font-mono font-bold text-sm shadow-[0_0_15px_rgba(255,42,42,0.4)]">
+              V3
+            </div>
+            <span class="font-sans font-semibold text-lg tracking-tight text-white/90">
+              SMARTBLOCK
+            </span>
+          </div>
+
+          <!-- Status Pill -->
+          <div class="glass-card rounded-full px-3 py-1 flex items-center gap-2 border-white/5">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-[11px] font-medium text-green-400 tracking-wide uppercase">Undetected</span>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="flex-grow flex flex-col items-center justify-center pt-28 pb-20 px-6">
+        
+        <!-- Hero Section -->
+        <div class="w-full max-w-5xl mx-auto flex flex-col items-center text-center space-y-8 animate-fade-up">
+          
+          <!-- Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md shadow-lg shadow-black/20 hover:border-white/20 transition-colors cursor-default">
+             <span class="text-xs font-mono text-gray-300">PRIVATE BUILD // STABLE</span>
+          </div>
+
+          <!-- Headlines -->
+          <div class="space-y-4">
+            <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-none">
+              SMARTBLOCK<span class="text-sb-accent">.</span>
+            </h1>
+            
+            <p class="text-lg md:text-2xl text-gray-400 max-w-2xl mx-auto font-light leading-relaxed">
+              Най-мощният инструмент за системна оптимизация и сигурност.
+            </p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 w-full sm:w-auto">
+            <a href="client.zip" class="btn-primary w-full sm:w-auto px-8 py-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 text-white group tracking-wide">
+              <i data-lucide="download" class="w-4 h-4 group-hover:translate-y-0.5 transition-transform"></i>
+              DOWNLOAD CLIENT
+            </a>
+            
+             <a href="https://discord.gg/fQEaTzRq" target="_blank" class="btn-discord w-full sm:w-auto px-8 py-4 rounded-lg font-bold text-sm text-indigo-100 hover:text-white flex items-center justify-center gap-2 group tracking-wide">
+              <i data-lucide="users" class="w-4 h-4"></i>
+              JOIN DISCORD
+            </a>
+
+            <button onclick="openModal('access-modal')" class="btn-secondary w-full sm:w-auto px-8 py-4 rounded-lg font-bold text-sm text-gray-300 hover:text-white flex items-center justify-center gap-2 group tracking-wide">
+              <i data-lucide="key" class="w-4 h-4"></i>
+              GET KEY
+            </button>
+          </div>
+
+          <!-- Stats Bar -->
+          <div class="w-full max-w-3xl mt-12 pt-8 border-t border-white/5 grid grid-cols-3 gap-4 text-center">
+            <div>
+               <p class="text-[10px] uppercase tracking-widest text-gray-500 font-mono mb-1">Status</p>
+               <p class="text-sm font-bold text-green-400 flex items-center justify-center gap-2">
+                 UNDETECTED <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span>
+               </p>
+            </div>
+            <div>
+               <p class="text-[10px] uppercase tracking-widest text-gray-500 font-mono mb-1">Users</p>
+               <p class="text-sm font-bold text-white">5,000+</p>
+            </div>
+             <div>
+               <p class="text-[10px] uppercase tracking-widest text-gray-500 font-mono mb-1">Uptime</p>
+               <p class="text-sm font-bold text-white">99.9%</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- HOW IT WORKS (Timeline) -->
+        <div class="w-full max-w-7xl mx-auto mt-32 mb-12 animate-fade-up" style="animation-delay: 0.1s;">
+            <div class="flex flex-col items-center justify-center mb-16 text-center">
+                <h2 class="text-2xl font-bold text-white tracking-tight mb-2">ЛЕСЕН СТАРТ В 3 СТЪПКИ</h2>
+                <div class="h-1 w-20 bg-sb-accent rounded-full"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent z-0"></div>
+
+                <!-- Step 1 -->
+                <div class="glass-card p-8 rounded-xl relative z-10 flex flex-col items-center text-center group border-white/5 hover:border-white/10">
+                    <div class="w-24 h-24 rounded-full bg-black/40 border border-white/10 flex items-center justify-center mb-6 group-hover:border-sb-accent/50 group-hover:shadow-[0_0_30px_rgba(255,42,42,0.15)] transition-all duration-500">
+                        <i data-lucide="download-cloud" class="w-8 h-8 text-gray-400 group-hover:text-sb-accent transition-colors"></i>
+                    </div>
+                    <div class="font-mono text-sb-accent text-xs font-bold mb-2">STEP 01</div>
+                    <h3 class="text-lg font-bold text-white mb-2">СВАЛЯНЕ (DOWNLOAD)</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-[250px]">Свалете нашия олекотен клиент. Не се изисква инсталация, работи директно (Portable).</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-8 rounded-xl relative z-10 flex flex-col items-center text-center group border-white/5 hover:border-white/10">
+                    <div class="w-24 h-24 rounded-full bg-black/40 border border-white/10 flex items-center justify-center mb-6 group-hover:border-indigo-500/50 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.15)] transition-all duration-500">
+                        <i data-lucide="key" class="w-8 h-8 text-gray-400 group-hover:text-indigo-400 transition-colors"></i>
+                    </div>
+                    <div class="font-mono text-indigo-400 text-xs font-bold mb-2">STEP 02</div>
+                    <h3 class="text-lg font-bold text-white mb-2">АКТИВАЦИЯ (ACTIVATE)</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-[250px]">Вземете лицензен ключ през Discord или Session и го въведете в лоудъра.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-8 rounded-xl relative z-10 flex flex-col items-center text-center group border-white/5 hover:border-white/10">
+                    <div class="w-24 h-24 rounded-full bg-black/40 border border-white/10 flex items-center justify-center mb-6 group-hover:border-sb-accent/50 group-hover:shadow-[0_0_30px_rgba(255,42,42,0.15)] transition-all duration-500">
+                        <i data-lucide="crosshair" class="w-8 h-8 text-gray-400 group-hover:text-sb-accent transition-colors"></i>
+                    </div>
+                    <div class="font-mono text-sb-accent text-xs font-bold mb-2">STEP 03</div>
+                    <h3 class="text-lg font-bold text-white mb-2">ДОМИНАЦИЯ (DOMINATE)</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-[250px]">Натиснете 'Inject'. Софтуерът автоматично оптимизира системата и скрива процесите.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES GRID (6 Cards) -->
+        <div class="w-full max-w-7xl mx-auto mt-24 mb-12 animate-fade-up" style="animation-delay: 0.2s;">
+          <div class="flex flex-col items-center justify-center mb-16 text-center">
+             <h2 class="text-2xl font-bold text-white tracking-tight mb-2">ЗАЩО ДА ИЗБЕРЕТЕ НАС?</h2>
+             <div class="h-1 w-20 bg-gray-700 rounded-full"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Card 1: GHOST TECHNOLOGY -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                    <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="ghost" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">GHOST TECHNOLOGY</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Напълно невидима работа. Системата остава скрита от Task Manager и мониторинг инструменти. Никакви следи.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: ANTI-BAN SHIELD -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                     <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="shield" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">ANTI-BAN SHIELD</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Забрави за наказанията. Нашите алгоритми засичат и блокират защитите преди те да те усетят.</p>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Card 3: INSTANT INJECTION -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                     <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="zap" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">INSTANT INJECTION</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Без инсталации и чакане. Цъкаш веднъж и софтуерът се зарежда в паметта за части от секундата.</p>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Card 4: LIFETIME UPDATES -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                     <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="refresh-cw" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">LIFETIME UPDATES</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Ние следим всичко. При всеки пач на играта получавате новия файл директно от нас. Безплатни ъпгрейди завинаги.</p>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Card 5: MILITARY ENCRYPTION -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                     <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="lock" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">MILITARY ENCRYPTION</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Твоята връзка и данни са криптирани. Никой, дори ние, не може да види какво правиш на компютъра си.</p>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Card 6: VIP SUPPORT 24/7 -->
+            <div class="glass-card p-6 rounded-xl border border-white/5 hover:border-white/10 group transition-all">
+                <div class="flex items-start gap-4">
+                     <div class="p-3 rounded-lg bg-white/5 border border-white/5 group-hover:bg-sb-accent/10 group-hover:border-sb-accent/20 transition-colors">
+                        <i data-lucide="headphones" class="w-6 h-6 text-gray-300 group-hover:text-sb-accent"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">VIP SUPPORT 24/7</h3>
+                        <p class="text-sm text-gray-400 leading-relaxed">Директна връзка с разработчиците. Имаш проблем? Пишеш ни и го решаваме веднага.</p>
+                    </div>
+                </div>
+            </div>
+
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="w-full border-t border-white/5 py-8 bg-black/40 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-gray-500">
+          <p class="tracking-wide">© 2024 SMARTBLOCK SYSTEMS.</p>
+          <div class="flex gap-8 mt-4 md:mt-0">
+            <button onclick="openModal('tos-modal')" class="hover:text-sb-accent transition-colors">TERMS OF SERVICE</button>
+            <button onclick="openModal('privacy-modal')" class="hover:text-sb-accent transition-colors">PRIVACY POLICY</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 1: ACCESS KEY                        -->
+    <!-- ========================================== -->
+    <div id="access-modal" class="fixed inset-0 z-[100] flex items-center justify-center modal-hidden">
+        <div class="absolute inset-0 modal-bg" onclick="closeModal('access-modal')"></div>
+        <div class="relative z-10 glass-card w-full max-w-lg mx-4 rounded-2xl p-0 modal-content border-white/10 shadow-2xl">
+            
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="lock" class="w-5 h-5 text-sb-accent"></i>
+                    Purchase Access Key
+                </h3>
+                <button onclick="closeModal('access-modal')" class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-8 space-y-6">
+                <p class="text-sm text-gray-300 leading-relaxed">
+                   To maintain operational security, we process payments exclusively via Session. 
+                   Copy the ID below and contact our verification bot.
+                </p>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-mono uppercase tracking-widest text-gray-500">Session ID</label>
+                    <div class="relative group">
+                        <div class="w-full bg-black/50 border border-white/10 rounded-lg p-4 pr-12 font-mono text-xs text-gray-300 break-all transition-colors group-hover:border-white/20">
+                            05c8b2a53b36aa0af0b43010f8677e23f8b8d859cfd065f5dfde5a5fc34dfde33e
+                        </div>
+                        <button id="copy-btn" onclick="copySessionId()" class="absolute right-2 top-2 bottom-2 w-8 flex items-center justify-center rounded bg-white/5 hover:bg-sb-accent hover:text-white transition-all text-gray-400">
+                            <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <a href="https://getsession.org/" target="_blank" class="px-6 py-2.5 bg-sb-accent text-white font-medium text-xs rounded-lg hover:bg-red-600 transition-colors shadow-lg shadow-red-900/20">
+                        Download Session App
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 2: TERMS OF SERVICE (Bulgarian)      -->
+    <!-- ========================================== -->
+    <div id="tos-modal" class="fixed inset-0 z-[100] flex items-center justify-center modal-hidden">
+        <div class="absolute inset-0 modal-bg" onclick="closeModal('tos-modal')"></div>
+        <div class="relative z-10 glass-card w-full max-w-2xl mx-4 rounded-2xl p-0 modal-content border-white/10 shadow-2xl flex flex-col h-[80vh]">
+            
+            <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="scale" class="w-5 h-5 text-gray-400"></i>
+                    Terms of Service
+                </h3>
+                <button onclick="closeModal('tos-modal')" class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-8 overflow-y-auto font-mono text-sm text-gray-400 space-y-6 leading-relaxed custom-scrollbar">
+                <p>С достъпването на този уебсайт и използването на нашите продукти, вие автоматично се съгласявате с посочените по-долу условия.</p>
+
+                <div class="space-y-2">
+                    <h4 class="text-white font-bold uppercase text-xs tracking-wider">Предназначение на Продукта</h4>
+                    <p>Всички софтуерни продукти (SmartBlock Script), предоставяни тук, са разработени единствено с образователна цел и за тестване на сигурността на собствени устройства.</p>
+                    <ul class="list-disc pl-4 space-y-1 marker:text-sb-accent">
+                        <li>Ние не насърчаваме използването на софтуера за академична измама.</li>
+                        <li>Вие поемате пълна отговорност за начина, по който използвате инструментите.</li>
+                        <li>Екипът на SmartBlock не носи отговорност за наказания от трети страни.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-white font-bold uppercase text-xs tracking-wider">Политика за Връщане (No Refund)</h4>
+                    <p>Тъй като продаваме нематериални дигитални стоки:</p>
+                    <ul class="list-disc pl-4 space-y-1 marker:text-sb-accent">
+                        <li class="text-white font-semibold">ВСИЧКИ ПРОДАЖБИ СА ОКОНЧАТЕЛНИ.</li>
+                        <li>Връщане на пари НЕ се извършва след изпращане на ключа.</li>
+                    </ul>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-white font-bold uppercase text-xs tracking-wider">Поверителност</h4>
+                    <p>Ние уважаваме вашата анонимност. Не съхраняваме лични данни, IP адреси или логове.</p>
+                </div>
+                
+                <p class="text-xs text-gray-600 pt-4 border-t border-white/5">© 2024 SmartBlock Dev Team. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODAL 3: PRIVACY POLICY (Bulgarian)        -->
+    <!-- ========================================== -->
+    <div id="privacy-modal" class="fixed inset-0 z-[100] flex items-center justify-center modal-hidden">
+        <div class="absolute inset-0 modal-bg" onclick="closeModal('privacy-modal')"></div>
+        <div class="relative z-10 glass-card w-full max-w-2xl mx-4 rounded-2xl p-0 modal-content border-white/10 shadow-2xl flex flex-col h-[80vh]">
+            
+            <div class="px-8 py-6 border-b border-white/5 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i data-lucide="shield" class="w-5 h-5 text-gray-400"></i>
+                    Privacy Policy
+                </h3>
+                <button onclick="closeModal('privacy-modal')" class="text-gray-400 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-8 overflow-y-auto font-mono text-sm text-gray-400 space-y-8 leading-relaxed custom-scrollbar">
+                <p class="text-white/80">Вашата сигурност и анонимност са наш основен приоритет. Ето как гарантираме това:</p>
+
+                <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                    <h4 class="text-white font-bold text-xs uppercase mb-2 flex items-center gap-2">
+                        <span class="text-sb-accent">1.</span> Без Събиране на Лични Данни (No Logs)
+                    </h4>
+                    <p class="mb-2">Ние НЕ събираме, не съхраняваме и не продаваме вашата лична информация.</p>
+                    <ul class="list-disc pl-4 space-y-1 text-xs marker:text-sb-accent">
+                        <li>Не записваме IP адреси.</li>
+                        <li>Не изискваме имейли или телефонни номера.</li>
+                        <li>Не пазим история на вашата активност.</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                    <h4 class="text-white font-bold text-xs uppercase mb-2 flex items-center gap-2">
+                        <span class="text-sb-accent">2.</span> HWID и Сигурност
+                    </h4>
+                    <p class="mb-2">За да функционира лицензът, системата генерира уникален хеш (HWID) на вашето устройство.</p>
+                    <ul class="list-disc pl-4 space-y-1 text-xs marker:text-sb-accent">
+                        <li>Този код е криптиран и се използва ЕДИНСТВЕНО за валидация.</li>
+                        <li>Той не може да бъде използван за разкриване на вашата самоличност.</li>
+                    </ul>
+                </div>
+
+                <div class="p-4 bg-white/5 rounded-lg border border-white/5">
+                    <h4 class="text-white font-bold text-xs uppercase mb-2 flex items-center gap-2">
+                        <span class="text-sb-accent">3.</span> Комуникация
+                    </h4>
+                    <p class="mb-2">Цялата комуникация и покупка на ключове се извършва през децентрализираната мрежа Session.</p>
+                    <ul class="list-disc pl-4 space-y-1 text-xs marker:text-sb-accent">
+                        <li>Гарантирано криптиране от край до край.</li>
+                        <li>Няма метаданни, които да свържат плащането с вашата самоличност.</li>
+                    </ul>
+                </div>
+
+                <p class="text-center text-white/60 text-xs italic pt-4">"Използвайки SmartBlock, вие избирате пълна дигитална невидимост."</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Logic Script -->
+    <script>
+      // Initialize Icons
+      lucide.createIcons();
+
+      // --- Modal Logic ---
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('modal-hidden');
+            // Small timeout to allow removing 'hidden' before adding active class for CSS transition
+            setTimeout(() => {
+                modal.classList.add('modal-active');
+            }, 10);
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('modal-active');
+            setTimeout(() => {
+                modal.classList.add('modal-hidden');
+            }, 300); // Wait for transition to finish
+        }
+      }
+
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal('access-modal');
+            closeModal('tos-modal');
+            closeModal('privacy-modal');
+        }
+      });
+
+      // --- Copy Functionality ---
+      function copySessionId() {
+        const id = "05c8b2a53b36aa0af0b43010f8677e23f8b8d859cfd065f5dfde5a5fc34dfde33e";
+        navigator.clipboard.writeText(id).then(() => {
+            const btn = document.getElementById('copy-btn');
+            
+            // Swap icon to check
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check w-4 h-4 text-green-400"><path d="M20 6 9 17l-5-5"/></svg>';
+            btn.classList.add('bg-green-500/10');
+
+            setTimeout(() => {
+                // Revert
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copy w-4 h-4"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>';
+                btn.classList.remove('bg-green-500/10');
+            }, 2000);
+        });
+      }
+    </script>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
