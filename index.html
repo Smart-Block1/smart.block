@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartBlock V3 - System Optimization & Security</title>
+    <meta name="description" content="Най-мощният инструмент за системна оптимизация и сигурност.">
     
     <!-- Scripts & Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -125,23 +126,27 @@
         border: 1px solid rgba(255, 42, 42, 0.4);
         box-shadow: 0 0 20px rgba(255, 42, 42, 0.1), inset 0 0 10px rgba(255, 42, 42, 0.05);
         transition: all 0.3s ease;
+        cursor: pointer;
       }
       
       .btn-primary:hover {
         box-shadow: 0 0 30px rgba(255, 42, 42, 0.25), inset 0 0 20px rgba(255, 42, 42, 0.1);
         border-color: rgba(255, 42, 42, 0.8);
         text-shadow: 0 0 10px rgba(255, 42, 42, 0.5);
+        transform: translateY(-2px);
       }
 
       .btn-secondary {
         background: rgba(255, 255, 255, 0.02);
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
+        cursor: pointer;
       }
 
       .btn-secondary:hover {
         background: rgba(255, 255, 255, 0.05);
         border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
       }
 
       .btn-discord {
@@ -149,6 +154,7 @@
         border: 1px solid rgba(88, 101, 242, 0.2);
         box-shadow: 0 0 15px rgba(88, 101, 242, 0.05);
         transition: all 0.3s ease;
+        cursor: pointer;
       }
 
       .btn-discord:hover {
@@ -157,6 +163,7 @@
         box-shadow: 0 0 25px rgba(88, 101, 242, 0.15);
         text-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
         color: #fff;
+        transform: translateY(-2px);
       }
 
       /* --- Modal Animation --- */
@@ -193,8 +200,7 @@
       ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
       ::-webkit-scrollbar-thumb:hover { background: #555; }
     </style>
-  <link rel="stylesheet" href="/index.css">
-</head>
+  </head>
   <body class="overflow-x-hidden selection:bg-sb-accent selection:text-white font-sans">
     
     <!-- Background Elements -->
@@ -253,7 +259,7 @@
 
           <!-- Buttons -->
           <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 w-full sm:w-auto">
-            <a href="client.zip" class="btn-primary w-full sm:w-auto px-8 py-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 text-white group tracking-wide">
+            <a href="#" onclick="alert('⚠️ SYSTEM UPDATE: Uploading new secure build... Please wait.')" class="btn-primary w-full sm:w-auto px-8 py-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 text-white group tracking-wide">
               <i data-lucide="download" class="w-4 h-4 group-hover:translate-y-0.5 transition-transform"></i>
               DOWNLOAD CLIENT
             </a>
@@ -332,6 +338,52 @@
             </div>
         </div>
 
+        <!-- VISUAL INSTALLATION GUIDE -->
+        <div class="w-full max-w-5xl mx-auto mt-24 mb-12 animate-fade-up" style="animation-delay: 0.15s;">
+             <div class="flex flex-col items-center justify-center mb-10 text-center">
+                 <h2 class="text-2xl font-bold text-white tracking-tight mb-2 uppercase">Ръководство за Инсталация</h2>
+                 <div class="h-1 w-20 bg-sb-accent rounded-full"></div>
+             </div>
+
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Step 1 -->
+                <div class="glass-card p-6 rounded-xl border border-white/5 relative group">
+                    <h3 class="text-lg font-bold text-white mb-1"><span class="text-sb-accent">Стъпка 1:</span> Подготовка</h3>
+                    <p class="text-sm text-gray-400 mb-4 h-10">Свалете файла и го разархивирайте в папка на работния плот.</p>
+                    <div class="relative overflow-hidden rounded-lg mt-2">
+                        <img src="step1.jpg" alt="Download" class="w-full h-48 object-cover border border-red-900/50 shadow-[0_0_15px_rgba(255,42,42,0.1)] cursor-zoom-in hover:scale-105 transition-transform duration-300" onclick="openLightbox(this.src)">
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-6 rounded-xl border border-white/5 relative group">
+                    <h3 class="text-lg font-bold text-white mb-1"><span class="text-sb-accent">Стъпка 2:</span> Отворете конзолата</h3>
+                    <p class="text-sm text-gray-400 mb-4 h-10">Напишете <span class="text-white bg-white/10 px-1 rounded font-mono">chrome://extensions</span> в адреса на браузъра.</p>
+                    <div class="relative overflow-hidden rounded-lg mt-2">
+                        <img src="step2.jpg" alt="Chrome Extensions" class="w-full h-48 object-cover border border-red-900/50 shadow-[0_0_15px_rgba(255,42,42,0.1)] cursor-zoom-in hover:scale-105 transition-transform duration-300" onclick="openLightbox(this.src)">
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-6 rounded-xl border border-white/5 relative group">
+                    <h3 class="text-lg font-bold text-white mb-1"><span class="text-sb-accent">Стъпка 3:</span> Активация</h3>
+                    <p class="text-sm text-gray-400 mb-4 h-10"><span class="text-sb-accent font-bold">ВАЖНО:</span> Включете <span class="font-bold text-white">'Developer mode'</span> (горе вдясно) и веднага натиснете бутона <span class="font-bold text-white">'Load unpacked'</span>.</p>
+                    <div class="relative overflow-hidden rounded-lg mt-2">
+                        <img src="step3.jpg" alt="Dev Mode and Load" class="w-full h-48 object-cover border border-red-900/50 shadow-[0_0_15px_rgba(255,42,42,0.1)] cursor-zoom-in hover:scale-105 transition-transform duration-300" onclick="openLightbox(this.src)">
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="glass-card p-6 rounded-xl border border-white/5 relative group">
+                    <h3 class="text-lg font-bold text-white mb-1"><span class="text-sb-accent">Стъпка 4:</span> Избор на файл</h3>
+                    <p class="text-sm text-gray-400 mb-4 h-10">Изберете папката, която разархивирахте в началото.</p>
+                    <div class="relative overflow-hidden rounded-lg mt-2">
+                        <img src="step4.jpg" alt="Select Folder" class="w-full h-48 object-cover border border-red-900/50 shadow-[0_0_15px_rgba(255,42,42,0.1)] cursor-zoom-in hover:scale-105 transition-transform duration-300" onclick="openLightbox(this.src)">
+                    </div>
+                </div>
+             </div>
+        </div>
+
         <!-- FEATURES GRID (6 Cards) -->
         <div class="w-full max-w-7xl mx-auto mt-24 mb-12 animate-fade-up" style="animation-delay: 0.2s;">
           <div class="flex flex-col items-center justify-center mb-16 text-center">
@@ -362,7 +414,7 @@
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-white mb-2">ANTI-BAN SHIELD</h3>
-                        <p class="text-sm text-gray-400 leading-relaxed">Забрави за наказанията. Нашите алгоритми засичат и блокират защитите преди те да те усетят.</p>
+                        <p class="text-sm text-gray-400 leading-relaxed">Забрави за наказания. Нашите алгоритми засичат и блокират защитите преди те да те усетят.</p>
                     </div>
                 </div>
             </div>
@@ -593,11 +645,64 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL 4: LIGHTBOX (Image Zoom) FIXED       -->
+    <!-- ========================================== -->
+    <div id="lightbox-modal" class="hidden fixed inset-0 z-[200] bg-black/90 backdrop-blur-md items-center justify-center">
+        <!-- Backdrop Click Area -->
+        <div class="absolute inset-0 z-0" onclick="closeLightbox()"></div>
+
+        <!-- Close Button (Fixed Top-Right, High Z-Index, Explicit OnClick) -->
+        <button 
+            onclick="closeLightbox()"
+            class="fixed top-5 right-5 z-[300] bg-black/50 hover:bg-red-600 text-white rounded-full p-3 cursor-pointer transition-all border border-white/20 hover:scale-110 shadow-lg group"
+            aria-label="Close Lightbox"
+        >
+            <i data-lucide="x" class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300"></i>
+        </button>
+
+        <!-- Image Container -->
+        <div class="relative z-[250] p-4 flex items-center justify-center max-w-[95vw] max-h-[95vh]" onclick="event.stopPropagation()">
+             <img 
+                id="lightbox-img" 
+                src="" 
+                alt="Zoomed Preview" 
+                class="max-w-full max-h-[90vh] rounded-lg shadow-[0_0_50px_rgba(255,42,42,0.2)] object-contain transition-transform duration-300 scale-100"
+             >
+        </div>
+    </div>
 
     <!-- Logic Script -->
     <script>
       // Initialize Icons
       lucide.createIcons();
+
+      // --- Lightbox Logic (REWRITTEN) ---
+      function openLightbox(src) {
+          const modal = document.getElementById('lightbox-modal');
+          const img = document.getElementById('lightbox-img');
+          
+          if (modal && img) {
+              img.src = src;
+              // Remove hidden, add flex to display centered
+              modal.classList.remove('hidden');
+              modal.classList.add('flex');
+          }
+      }
+
+      function closeLightbox() {
+          const modal = document.getElementById('lightbox-modal');
+          const img = document.getElementById('lightbox-img');
+          
+          if (modal) {
+              // Hide modal
+              modal.classList.add('hidden');
+              modal.classList.remove('flex');
+              
+              // Clear src slightly later to prevent visual flicker during close
+              if (img) setTimeout(() => { img.src = ''; }, 200);
+          }
+      }
 
       // --- Modal Logic ---
       function openModal(modalId) {
@@ -627,6 +732,7 @@
             closeModal('access-modal');
             closeModal('tos-modal');
             closeModal('privacy-modal');
+            closeLightbox();
         }
       });
 
@@ -648,6 +754,5 @@
         });
       }
     </script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+  </body>
 </html>
