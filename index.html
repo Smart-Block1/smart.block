@@ -646,9 +646,9 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL 4: LIGHTBOX (Image Zoom) FIXED       -->
+    <!-- MODAL 4: LIGHTBOX (Image Zoom) ANIMATED    -->
     <!-- ========================================== -->
-    <div id="lightbox-modal" class="hidden fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 md:p-12">
+    <div id="lightbox-modal" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 md:p-12 opacity-0 invisible pointer-events-none transition-all duration-300 ease-out">
         <!-- Backdrop Click Area -->
         <div class="absolute inset-0 z-0" onclick="closeLightbox()"></div>
 
@@ -661,8 +661,8 @@
             <i data-lucide="x" class="w-8 h-8 group-hover:rotate-90 transition-transform duration-300"></i>
         </button>
 
-        <!-- Image Container (Constrained max-w-5xl, max-h-[85vh]) -->
-        <div class="relative z-[250] max-w-5xl w-full max-h-[85vh] flex items-center justify-center rounded-xl" onclick="event.stopPropagation()">
+        <!-- Image Container (Constrained max-w-5xl, max-h-[85vh], Animated) -->
+        <div id="lightbox-container" class="relative z-[250] max-w-5xl w-full max-h-[85vh] flex items-center justify-center rounded-xl opacity-0 scale-95 transition-all duration-300 ease-out transform" onclick="event.stopPropagation()">
              <img 
                 id="lightbox-img" 
                 src="" 
@@ -677,30 +677,48 @@
       // Initialize Icons
       lucide.createIcons();
 
-      // --- Lightbox Logic (REWRITTEN) ---
+      // --- Lightbox Logic (ANIMATED) ---
       function openLightbox(src) {
           const modal = document.getElementById('lightbox-modal');
           const img = document.getElementById('lightbox-img');
+          const container = document.getElementById('lightbox-container');
           
-          if (modal && img) {
+          if (modal && img && container) {
               img.src = src;
-              // Remove hidden, add flex to display centered
-              modal.classList.remove('hidden');
-              modal.classList.add('flex');
+              
+              // 1. Unhide (make it visible to layout, but transparent)
+              modal.classList.remove('invisible', 'pointer-events-none');
+              
+              // 2. Small delay to ensure browser acknowledges visibility before animating opacity/scale
+              setTimeout(() => {
+                  // Fade in background
+                  modal.classList.remove('opacity-0');
+                  
+                  // Zoom & Fade in image container
+                  container.classList.remove('scale-95', 'opacity-0');
+                  container.classList.add('scale-100');
+              }, 10);
           }
       }
 
       function closeLightbox() {
           const modal = document.getElementById('lightbox-modal');
           const img = document.getElementById('lightbox-img');
+          const container = document.getElementById('lightbox-container');
           
-          if (modal) {
-              // Hide modal
-              modal.classList.add('hidden');
-              modal.classList.remove('flex');
+          if (modal && container) {
+              // Fade out background
+              modal.classList.add('opacity-0');
               
-              // Clear src slightly later to prevent visual flicker during close
-              if (img) setTimeout(() => { img.src = ''; }, 200);
+              // Zoom out & Fade out image container
+              container.classList.remove('scale-100');
+              container.classList.add('scale-95', 'opacity-0');
+              
+              // Wait for transition (300ms) before hiding element completely
+              setTimeout(() => {
+                  modal.classList.add('invisible', 'pointer-events-none');
+                  if (img) img.src = '';
+              }, 300);
           }
       }
 
